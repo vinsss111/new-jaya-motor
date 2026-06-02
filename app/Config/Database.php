@@ -21,100 +21,55 @@ class Database extends Config
 
     /**
      * The default database connection.
-        // Detect TiDB Cloud by env hints or hostname patterns
-        $isTiDBEnv = false;
-        if (getenv('TIDB_CLOUD') || getenv('TIDB_HOST') || getenv('TIDB_PORT')) {
-            $isTiDBEnv = true;
+     *
+     * @var array<string, mixed>
+     */
+    public array $default = [
+        'DSN'          => '',
+        'hostname'     => 'localhost',
+        'username'     => 'root',
+        'password'     => '',
+        'database'     => '',
+        'DBDriver'     => 'MySQLi',
+        'DBPrefix'     => '',
+        'pConnect'     => false,
+        'DBDebug'      => true,
+        'charset'      => 'utf8mb4',
+        'DBCollat'     => 'utf8mb4_general_ci',
+        'swapPre'      => '',
+        'encrypt'      => false,
+        'compress'     => false,
+        'strictOn'     => false,
+        'failover'     => [],
+        'port'         => 4000,
+        'numberNative' => false,
+    ];
+
+    public function __construct()
+    {
+        parent::__construct();
+
+        // Membaca variabel Railway yang menggunakan HURUF BESAR & UNDERSCORE
+        if ($envHost = getenv('DATABASE_DEFAULT_HOSTNAME')) {
+            $this->default['hostname'] = trim($envHost);
+        }
+        if ($envUser = getenv('DATABASE_DEFAULT_USERNAME')) {
+            $this->default['username'] = trim($envUser);
+        }
+        if ($envPass = getenv('DATABASE_DEFAULT_PASSWORD')) {
+            $this->default['password'] = trim($envPass);
+        }
+        if ($envDb   = getenv('DATABASE_DEFAULT_DATABASE')) {
+            $this->default['database'] = trim($envDb);
+        }
+        if ($envPort = getenv('DATABASE_DEFAULT_PORT')) {
+            $this->default['port']     = (int)trim($envPort);
         }
 
-        if ($databaseUrl) {
-            $parts = parse_url($databaseUrl);
-            if ($parts !== false) {
-                if (!empty($parts['host'])) {
-                    $this->default['hostname'] = $parts['host'];
-                }
-                if (!empty($parts['user'])) {
-                    $this->default['username'] = $parts['user'];
-                }
-                if (array_key_exists('pass', $parts)) {
-                    $this->default['password'] = $parts['pass'];
-                }
-                if (!empty($parts['path'])) {
-                    $db = ltrim($parts['path'], '/');
-                    if ($db !== '') {
-                        $this->default['database'] = $db;
-                    }
-                }
-
-                // If host suggests TiDB (e.g., contains 'tidb'), mark as TiDB
-                if (!empty($parts['host']) && stripos($parts['host'], 'tidb') !== false) {
-                    $isTiDBEnv = true;
-                }
-
-                // If TiDB detected, enforce port 4000. Otherwise prefer port in URL if present.
-                if ($isTiDBEnv) {
-                    $this->default['port'] = 4000;
-                } elseif (!empty($parts['port'])) {
-                    $this->default['port'] = (int) $parts['port'];
-                }
-            }
-        } else {
-            $envPort = getenv('DATABASE_DEFAULT_DBPORT');
-            if ($envPort !== false && $envPort !== '') {
-                $this->default['port'] = (int) trim($envPort);
-            } else {
-                // If user indicates TiDB via env, enforce 4000, else use MySQL default 3306
-                $this->default['port'] = $isTiDBEnv ? 4000 : 3306;
-            }
-        }
-            $this->default['hostname'] = trim(getenv('DATABASE_DEFAULT_HOSTNAME'));
-        }
-        if (getenv('DATABASE_DEFAULT_USERNAME')) {
-            $this->default['username'] = trim(getenv('DATABASE_DEFAULT_USERNAME'));
-        }
-        if (getenv('DATABASE_DEFAULT_PASSWORD')) {
-            $this->default['password'] = trim(getenv('DATABASE_DEFAULT_PASSWORD'));
-        }
-        if (getenv('DATABASE_DEFAULT_DATABASE')) {
-            $this->default['database'] = trim(getenv('DATABASE_DEFAULT_DATABASE'));
-        }
-        if (getenv('DATABASE_DEFAULT_DBDRIVER')) {
-            $this->default['DBDriver'] = trim(getenv('DATABASE_DEFAULT_DBDRIVER'));
-        }
-        
-        // Allow common single DATABASE_URL style env vars used by hosts (Railway, ClearDB, JawsDB, etc.)
-        $databaseUrl = getenv('DATABASE_URL') ?: getenv('CLEARDB_DATABASE_URL') ?: getenv('JAWSDB_URL') ?: getenv('MYSQL_URL') ?: getenv('MYSQL_DATABASE_URL');
-
-        if ($databaseUrl) {
-            $parts = parse_url($databaseUrl);
-            if ($parts !== false) {
-                if (!empty($parts['host'])) {
-                    $this->default['hostname'] = $parts['host'];
-                }
-                if (!empty($parts['user'])) {
-                    $this->default['username'] = $parts['user'];
-                }
-                if (array_key_exists('pass', $parts)) {
-                    $this->default['password'] = $parts['pass'];
-                }
-                if (!empty($parts['path'])) {
-                    $db = ltrim($parts['path'], '/');
-                    if ($db !== '') {
-                        $this->default['database'] = $db;
-                    }
-                }
-                if (!empty($parts['port'])) {
-                    $this->default['port'] = (int) $parts['port'];
-                }
-            }
-        } else {
-            $envPort = getenv('DATABASE_DEFAULT_DBPORT');
-            if ($envPort !== false && $envPort !== '') {
-                $this->default['port'] = (int) trim($envPort);
-            } else {
-                $this->default['port'] = 4000; // Default port for TiDB Cloud, override if needed
-            }
-        }
+        // AMAN UNTUK TiDB: Lewati pengecekan sertifikat SSL lokal di container Docker
+        $this->default['encrypt'] = [
+            'ssl_verify_server_cert' => false
+        ];
     }
 
     //    /**
@@ -245,7 +200,7 @@ class Database extends Config
         'compress'    => false,
         'strictOn'    => true,
         'failover'    => [],
-        'port'        => 3306,
+        'port'        => 4000,
         'foreignKeys' => true,
         'busyTimeout' => 1000,
         'synchronous' => null,
