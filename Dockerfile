@@ -36,4 +36,4 @@ RUN mkdir -p /var/www/html/public/uploads \
 EXPOSE 80
 
 # Jalankan PHP server internal yang mengarah langsung ke folder public CodeIgniter 4
-CMD ["php", "-S", "0.0.0.0:80", "-t", "public", "public/index.php"]
+CMD ["php", "-S", "0.0.0.0:80", "-t", "public"]
