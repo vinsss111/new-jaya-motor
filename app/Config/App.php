@@ -18,7 +18,7 @@ class App extends BaseConfig
      */
     // If `APP_BASE_URL` is provided in the environment (e.g. Railway), use it.
     // Otherwise a sensible fallback will be computed in the constructor.
-    public string $baseURL = '';
+    public string $baseURL = 'https://new-jaya-motor-production.up.railway.app/';
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
@@ -187,29 +187,58 @@ class App extends BaseConfig
     /**
      * Configure runtime values that cannot be set as constant defaults.
      * Reads `APP_BASE_URL` environment variable (Railway sets env vars) and
-     * falls back to the previous production URL if nothing is provided.
+     * falls back to the current request host when available.
      */
     public function __construct()
     {
         parent::__construct();
 
-        // Prefer explicit environment variable
+        // Use the current request host when available so assets are loaded
+        // from the same domain as the request.
+        if (! empty($_SERVER['HTTP_HOST'])) {
+            $scheme = $this->detectSchemeFromServer();
+            $this->baseURL = $scheme . $_SERVER['HTTP_HOST'] . '/';
+            return;
+        }
+
+        // Prefer explicit environment variable if no request host is present.
         $envUrl = getenv('APP_BASE_URL') ?: (getenv('APP_URL') ?: getenv('RAILWAY_STATIC_URL'));
 
-        if (!empty($envUrl)) {
+        if (! empty($envUrl)) {
             $url = rtrim($envUrl, '/');
-            // If scheme missing, try to detect it
-            if (!preg_match('#^https?://#', $url)) {
-                $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
-                $url = $scheme . $url;
+            if (! preg_match('#^https?://#', $url)) {
+                $url = $this->detectSchemeFromServer() . $url;
             }
             $this->baseURL = $url . '/';
+            return;
         }
 
-        // If still empty, keep the previous production URL as a safe default
-        if (empty($this->baseURL)) {
-            $this->baseURL = 'https://new-jaya-motor-production.up.railway.app/';
+        // Fallback value for CLI or unusual environments.
+        $this->baseURL = 'https://new-jaya-motor-production.up.railway.app/';
+    }
+
+    private function detectSchemeFromServer(): string
+    {
+        if (! empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') {
+            return 'https://';
         }
+
+        if (! empty($_SERVER['HTTP_X_FORWARDED_PROTO'])) {
+            $proto = strtolower(trim(explode(',', $_SERVER['HTTP_X_FORWARDED_PROTO'])[0]));
+            if ($proto === 'https') {
+                return 'https://';
+            }
+        }
+
+        if (! empty($_SERVER['REQUEST_SCHEME']) && strtolower($_SERVER['REQUEST_SCHEME']) === 'https') {
+            return 'https://';
+        }
+
+        if (! empty($_SERVER['SERVER_PORT']) && (string) $_SERVER['SERVER_PORT'] === '443') {
+            return 'https://';
+        }
+
+        return 'http://';
     }
 
     /**
