@@ -1,0 +1,16 @@
+
+.env
+/writable/cache/*
+/writable/session/*
+/writable/debugbar/*
+/writable/logs/*
+!/writable/cache/index.html
+!/writable/session/index.html
+!/writable/logs/index.html
+
+/vendor/
+
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
