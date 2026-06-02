@@ -125,6 +125,239 @@
         <div class="nav-item">
             <a href="?p=dashboard" class="nav-link-custom <?= ($page == 'dashboard') ? 'active' : '' ?>">
                 <i class="bi bi-grid-1x2-fill"></i> Overview
+            </div>
+            <?php $session = service('session'); ?>
+            <div class="d-flex align-items-center">
+                <div class="text-end me-3 d-none d-md-block">
+                    <h6 class="mb-0 fw-bold"><?= $session->get('nama_lengkap'); ?></h6>
+                    <small class="text-muted">Administrator</small>
+                </div>
+                <img src="/assets/image/logo.png" width="45" height="45" class="rounded-circle border">
+            </div>
+        </div>
+
+        <div class="table-container mt-4">
+            <div class="row">
+                <div class="col-12">
+                    <h5 class="fw-bold">Ringkasan Persediaan</h5>
+                    <p class="text-muted small">Ringkasan stok, penjualan, dan aktivitas terbaru.</p>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Nama Barang</th>
+                                    <th>Stok</th>
+                                    <th>Harga</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>NGK Busi Type X</td>
+                                    <td><span class="badge bg-success badge-stock">Tersedia</span></td>
+                                    <td>Rp 120.000</td>
+                                    <td><button class="btn btn-sm btn-outline-primary">Detail</button></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Oli Mesin 1L</td>
+                                    <td><span class="badge bg-warning text-dark badge-stock">Hati-hati</span></td>
+                                    <td>Rp 85.000</td>
+                                    <td><button class="btn btn-sm btn-outline-primary">Detail</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Placeholder: additional init JS can go here
+            });
+        </script>
+    </body>
+    </html>
+            <a href="?p=masuk" class="nav-link-custom <?= ($page == 'masuk') ? 'active' : '' ?>">
+                <i class="bi bi-arrow-down-left-circle-fill text-success"></i> Barang Masuk
+            </a>
+        </div>
+        <div class="nav-item">
+            <a href="?p=keluar" class="nav-link-custom <?= ($page == 'keluar') ? 'active' : '' ?>">
+                <i class="bi bi-arrow-up-right-circle-fill text-danger"></i> Barang Keluar
+            </a>
+        </div>
+
+        <span class="nav-label mt-4">Pesanan</span>
+        <div class="nav-item">
+            <a href="?p=pesanan" class="nav-link-custom <?= ($page == 'pesanan') ? 'active' : '' ?>">
+                <i class="bi bi-clipboard-check text-warning"></i> Pesanan Pending
+            </a>
+        </div>
+
+        <div class="mt-auto">
+            <a href="/login/logout" class="btn btn-outline-danger w-100 fw-bold">
+                <i class="bi bi-door-open me-2"></i> Logout
+            </a>
+        </div>
+    </div>
+
+    <div class="content-wrapper">
+        
+        <div class="top-bar">
+            <div>
+                <h4 class="fw-bold mb-1 text-dark">
+                    <?php 
+                        if($page == 'inventory') echo "Master Data Inventory";
+                        elseif($page == 'masuk') echo "Log Barang Masuk (Restock)";
+                        elseif($page == 'keluar') echo "Log Barang Keluar (Terjual)";
+                        elseif($page == 'pesanan') echo "Daftar Pesanan (Menunggu Persetujuan)";
+                        else echo "Dashboard Overview";
+                    ?>
+                </h4>
+                <p class="text-muted small mb-0">Sabtu, 18 April 2026 | Area: Batam</p>
+            </div>
+            <?php $session = service('session'); ?>
+            <div class="d-flex align-items-center">
+                <div class="text-end me-3 d-none d-md-block">
+                    <h6 class="mb-0 fw-bold"><?= $session->get('nama_lengkap'); ?></h6>
+                    <small class="text-muted">Administrator</small>
+                </div>
+                <img src="/assets/image/logo.png" width="45" height="45" class="rounded-circle border">
+            </div>
+        </div>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMS New Jaya Motor - Management System</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/assets/image/logo.png">
+
+    <style>
+        :root {
+            --sidebar-bg: #0f172a;
+            --sidebar-active: #1e293b;
+            --primary-red: #dc2626;
+            --bg-body: #f1f5f9;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-body); 
+            color: #334155;
+        }
+
+        /* SIDEBAR STYLING */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            position: fixed;
+            background: var(--sidebar-bg);
+            color: #94a3b8;
+            padding: 1.5rem 1rem;
+            z-index: 1000;
+        }
+        .sidebar .brand {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 700;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #1e293b;
+            margin-bottom: 1.5rem;
+        }
+        .nav-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: block;
+            color: #64748b;
+        }
+        .nav-item { margin-bottom: 0.5rem; }
+        .nav-link-custom {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #cbd5e1;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            transition: 0.2s;
+        }
+        .nav-link-custom:hover, .nav-link-custom.active {
+            background: var(--sidebar-active);
+            color: white;
+            border-left: 4px solid var(--primary-red);
+        }
+        .nav-link-custom i {
+            margin-right: 12px;
+            font-size: 1.2rem;
+        }
+
+        /* MAIN CONTENT */
+        .content-wrapper {
+            margin-left: 260px;
+            padding: 2rem;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .badge-stock {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        /* Thumbnail Image */
+        .img-zoomable {
+            cursor: zoom-in;
+            transition: transform 0.2s;
+        }
+        .img-zoomable:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+
+    <?php 
+        // Tangkap parameter URL (passed from Controller in CI4)
+        $page = isset($page) ? $page : 'dashboard'; 
+    ?>
+
+    <div class="sidebar d-flex flex-column">
+        <div class="brand">
+            <i class="bi bi-tools text-danger me-2"></i> New Jaya <span class="text-danger">Motor</span>
+        </div>
+
+        <span class="nav-label">Menu</span>
+        <div class="nav-item">
+            <a href="?p=dashboard" class="nav-link-custom <?= ($page == 'dashboard') ? 'active' : '' ?>">
+                <i class="bi bi-grid-1x2-fill"></i> Overview
             </a>
         </div>
         <div class="nav-item">
