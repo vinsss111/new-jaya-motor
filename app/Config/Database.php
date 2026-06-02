@@ -49,24 +49,24 @@ class Database extends Config
     {
         parent::__construct();
 
-        // Membaca variabel lingkungan format huruf kecil dengan titik (Sesuai CodeIgniter 4)
-        if ($envHost = getenv('database.default.hostname')) {
+        // Membaca variabel Railway yang menggunakan HURUF BESAR & UNDERSCORE
+        if ($envHost = getenv('DATABASE_DEFAULT_HOSTNAME')) {
             $this->default['hostname'] = trim($envHost);
         }
-        if ($envUser = getenv('database.default.username')) {
+        if ($envUser = getenv('DATABASE_DEFAULT_USERNAME')) {
             $this->default['username'] = trim($envUser);
         }
-        if ($envPass = getenv('database.default.password')) {
+        if ($envPass = getenv('DATABASE_DEFAULT_PASSWORD')) {
             $this->default['password'] = trim($envPass);
         }
-        if ($envDb   = getenv('database.default.database')) {
+        if ($envDb   = getenv('DATABASE_DEFAULT_DATABASE')) {
             $this->default['database'] = trim($envDb);
         }
-        if ($envPort = getenv('database.default.port')) {
+        if ($envPort = getenv('DATABASE_DEFAULT_PORT')) {
             $this->default['port']     = (int)trim($envPort);
         }
 
-        // Memaksa penonaktifan pengecekan sertifikat SSL lokal agar Docker mau terhubung dengan TiDB port 4000
+        // AMAN UNTUK TiDB: Lewati pengecekan sertifikat SSL lokal di container Docker
         $this->default['encrypt'] = [
             'ssl_verify_server_cert' => false
         ];
