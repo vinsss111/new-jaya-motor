@@ -1,7 +1,7 @@
-# Menggunakan image PHP resmi dengan Apache berbasis Debian
-FROM php:8.2-apache
+# Menggunakan image PHP 8.2 versi CLI (Tanpa Apache bawaan agar tidak konflik)
+FROM php:8.2-cli
 
-# Install ekstensi sistem dan dependensi yang dibutuhkan CodeIgniter 4
+# Install dependensi sistem dasar yang diwajibkan oleh CodeIgniter 4
 RUN apt-get update && apt-get install -y \
     libicu-dev \
     libpng-dev \
@@ -12,31 +12,26 @@ RUN apt-get update && apt-get install -y \
     git \
     && rm -rf /var/lib/apt/lists/*
 
-# Install dan aktifkan ekstensi PHP (intl, mysqli, gd, opcache)
+# Install ekstensi PHP yang dibutuhkan untuk koneksi TiDB/MySQL dan fungsi web
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install intl mysqli gd opcache
 
-# Aktifkan modul mod_rewrite Apache agar routing URL CodeIgniter berjalan lancar
-RUN a2enmod rewrite
-
-# Salin seluruh source code aplikasi ke dalam container server
+# Salin seluruh source code proyek ke dalam container
 COPY . /var/www/html
 
-# Ubah Document Root Apache agar mengarah secara ketat ke folder public milik CI4
-ENV APACHE_DOCUMENT_ROOT /var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# Masuk ke direktori kerja utama
+WORKDIR /var/www/html
 
-# Pasang Composer untuk mengelola package manager
+# Pasang Composer dan unduh library vendor secara optimal
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Berikan hak akses penuh (permission) ke folder writable agar CI4 bisa menulis log/cache
+# Setel hak akses folder writable agar CI4 bisa menulis log dan cache
 RUN chown -R www-data:www-data /var/www/html/writable \
     && chmod -R 775 /var/www/html/writable
 
-# Gunakan port standar HTTP
+# Daftarkan Port 80 untuk lalu lintas jaringan global Railway
 EXPOSE 80
 
-# Jalankan Apache langsung di foreground (menghindari crash restart service)
-CMD ["apache2-foreground"]
+# Jalankan PHP server internal yang mengarah langsung ke folder public CodeIgniter 4
+CMD ["php", "-S", "0.0.0.0:80", "-t", "public"]
