@@ -37,13 +37,11 @@ class Database extends Config
         'charset'      => 'utf8mb4',
         'DBCollat'     => 'utf8mb4_general_ci',
         'swapPre'      => '',
-        'encrypt'      => [
-            'ssl_verify_server_cert' => false
-        ],
+        'encrypt'      => false,
         'compress'     => false,
         'strictOn'     => false,
         'failover'     => [],
-        'port'         => 4000,
+        'port'         => 3306,
         'numberNative' => false,
     ];
 
@@ -68,11 +66,38 @@ class Database extends Config
             $this->default['DBDriver'] = trim(getenv('DATABASE_DEFAULT_DBDRIVER'));
         }
         
-        $envPort = getenv('DATABASE_DEFAULT_DBPORT');
-        if ($envPort !== false && $envPort !== '') {
-            $this->default['port'] = (int) trim($envPort);
+        // Allow common single DATABASE_URL style env vars used by hosts (Railway, ClearDB, JawsDB, etc.)
+        $databaseUrl = getenv('DATABASE_URL') ?: getenv('CLEARDB_DATABASE_URL') ?: getenv('JAWSDB_URL') ?: getenv('MYSQL_URL') ?: getenv('MYSQL_DATABASE_URL');
+
+        if ($databaseUrl) {
+            $parts = parse_url($databaseUrl);
+            if ($parts !== false) {
+                if (!empty($parts['host'])) {
+                    $this->default['hostname'] = $parts['host'];
+                }
+                if (!empty($parts['user'])) {
+                    $this->default['username'] = $parts['user'];
+                }
+                if (array_key_exists('pass', $parts)) {
+                    $this->default['password'] = $parts['pass'];
+                }
+                if (!empty($parts['path'])) {
+                    $db = ltrim($parts['path'], '/');
+                    if ($db !== '') {
+                        $this->default['database'] = $db;
+                    }
+                }
+                if (!empty($parts['port'])) {
+                    $this->default['port'] = (int) $parts['port'];
+                }
+            }
         } else {
-            $this->default['port'] = 4000;
+            $envPort = getenv('DATABASE_DEFAULT_DBPORT');
+            if ($envPort !== false && $envPort !== '') {
+                $this->default['port'] = (int) trim($envPort);
+            } else {
+                $this->default['port'] = 3306;
+            }
         }
     }
 

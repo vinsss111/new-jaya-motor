@@ -6,10 +6,10 @@
     <title>CMS New Jaya Motor - Management System</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="<?= base_url('assets/bootstrap/css/bootstrap.min.css'); ?>" rel="stylesheet">
+    <link href="/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="<?= base_url('assets/image/logo.png'); ?>">
+    <link rel="icon" type="image/x-icon" href="/assets/image/logo.png">
 
     <style>
         :root {
@@ -153,7 +153,7 @@
         </div>
 
         <div class="mt-auto">
-            <a href="<?= base_url('login/logout'); ?>" class="btn btn-outline-danger w-100 fw-bold">
+            <a href="/login/logout" class="btn btn-outline-danger w-100 fw-bold">
                 <i class="bi bi-door-open me-2"></i> Logout
             </a>
         </div>
@@ -180,7 +180,7 @@
                     <h6 class="mb-0 fw-bold"><?= $session->get('nama_lengkap'); ?></h6>
                     <small class="text-muted">Administrator</small>
                 </div>
-                <img src="<?= base_url('assets/image/logo.png'); ?>" width="45" height="45" class="rounded-circle border">
+                <img src="/assets/image/logo.png" width="45" height="45" class="rounded-circle border">
             </div>
         </div>
 

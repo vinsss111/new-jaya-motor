@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password - New Jaya Motor</title>
-    <link rel="icon" type="image/x-icon" href="<?= base_url('assets/image/logo.png'); ?>">
-    <link href="<?= base_url('assets/bootstrap/css/bootstrap.min.css'); ?>" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/assets/image/logo.png">
+    <link href="/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
@@ -120,7 +120,7 @@
             $(this).html('<span class="spinner-border spinner-border-sm"></span>').attr('disabled', true);
 
             $.ajax({
-                url: "<?= base_url('login/cek_password_lama'); ?>",
+                url: "/login/cek_password_lama",
                 type: "POST",
                 data: { username: username, password_lama: passLama },
                 dataType: "JSON",
