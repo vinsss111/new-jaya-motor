@@ -26,11 +26,11 @@ class Database extends Config
      */
     public array $default = [
         'DSN'          => '',
-        'hostname' => getenv('DATABASE_DEFAULT_HOSTNAME'),
-        'username' => getenv('DATABASE_DEFAULT_USERNAME'),
-        'password' => getenv('DATABASE_DEFAULT_PASSWORD'),
-        'database' => getenv('DATABASE_DEFAULT_DATABASE'),
-        'DBDriver' => getenv('DATABASE_DEFAULT_DBDRIVER') ?: 'Postgre', // Pastikan fallback-nya Postgre
+        'hostname'     => 'localhost',
+        'username'     => 'root',
+        'password'     => '',
+        'database'     => '',
+        'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,
         'DBDebug'      => true,
@@ -41,7 +41,7 @@ class Database extends Config
         'compress'     => false,
         'strictOn'     => false,
         'failover'     => [],
-        'port'     => getenv('DATABASE_DEFAULT_DBPORT'),
+        'port'         => 3306,
         'numberNative' => false,
     ];
 
@@ -49,21 +49,76 @@ class Database extends Config
     {
         parent::__construct();
 
-        // Membaca variabel Railway yang menggunakan HURUF BESAR & UNDERSCORE
-        if ($envHost = getenv('DATABASE_DEFAULT_HOSTNAME')) {
-            $this->default['hostname'] = trim($envHost);
+        // Detect TiDB Cloud via env or hostname patterns
+        $isTiDBEnv = false;
+        if (getenv('TIDB_CLOUD') || getenv('TIDB_HOST') || getenv('TIDB_PORT')) {
+            $isTiDBEnv = true;
         }
-        if ($envUser = getenv('DATABASE_DEFAULT_USERNAME')) {
-            $this->default['username'] = trim($envUser);
-        }
-        if ($envPass = getenv('DATABASE_DEFAULT_PASSWORD')) {
-            $this->default['password'] = trim($envPass);
-        }
-        if ($envDb   = getenv('DATABASE_DEFAULT_DATABASE')) {
-            $this->default['database'] = trim($envDb);
-        }
-        if ($envPort = getenv('DATABASE_DEFAULT_PORT')) {
-            $this->default['port']     = (int)trim($envPort);
+
+        // Try to parse DATABASE_URL-style env vars first (Railway, ClearDB, JawsDB, etc.)
+        $databaseUrl = getenv('DATABASE_URL') 
+            ?: (getenv('CLEARDB_DATABASE_URL') 
+            ?: (getenv('JAWSDB_URL') 
+            ?: (getenv('MYSQL_URL') 
+            ?: (getenv('MYSQL_DATABASE_URL') 
+            ?: false))));
+
+        if ($databaseUrl) {
+            $parts = parse_url($databaseUrl);
+            if ($parts !== false) {
+                if (!empty($parts['host'])) {
+                    $this->default['hostname'] = $parts['host'];
+                    // If host contains 'tidb', mark as TiDB
+                    if (stripos($parts['host'], 'tidb') !== false) {
+                        $isTiDBEnv = true;
+                    }
+                }
+                if (!empty($parts['user'])) {
+                    $this->default['username'] = $parts['user'];
+                }
+                if (array_key_exists('pass', $parts)) {
+                    $this->default['password'] = $parts['pass'];
+                }
+                if (!empty($parts['path'])) {
+                    $db = ltrim($parts['path'], '/');
+                    if ($db !== '') {
+                        $this->default['database'] = $db;
+                    }
+                }
+                // If TiDB detected, enforce port 4000. Otherwise prefer port in URL if present.
+                if ($isTiDBEnv) {
+                    $this->default['port'] = 4000;
+                } elseif (!empty($parts['port'])) {
+                    $this->default['port'] = (int) $parts['port'];
+                }
+            }
+        } else {
+            // Fall back to individual DATABASE_DEFAULT_* env vars
+            if ($envHost = getenv('DATABASE_DEFAULT_HOSTNAME')) {
+                $this->default['hostname'] = trim($envHost);
+            }
+            if ($envUser = getenv('DATABASE_DEFAULT_USERNAME')) {
+                $this->default['username'] = trim($envUser);
+            }
+            if ($envPass = getenv('DATABASE_DEFAULT_PASSWORD')) {
+                $this->default['password'] = trim($envPass);
+            }
+            if ($envDb = getenv('DATABASE_DEFAULT_DATABASE')) {
+                $this->default['database'] = trim($envDb);
+            }
+            if ($envDriver = getenv('DATABASE_DEFAULT_DBDRIVER')) {
+                $this->default['DBDriver'] = trim($envDriver);
+            }
+
+            // Handle port: TiDB must use 4000, else use provided or default 3306
+            $envPort = getenv('DATABASE_DEFAULT_DBPORT');
+            if ($isTiDBEnv) {
+                $this->default['port'] = 4000;
+            } elseif ($envPort !== false && $envPort !== '') {
+                $this->default['port'] = (int) trim($envPort);
+            } else {
+                $this->default['port'] = 3306;
+            }
         }
 
         // AMAN UNTUK TiDB: Lewati pengecekan sertifikat SSL lokal di container Docker
