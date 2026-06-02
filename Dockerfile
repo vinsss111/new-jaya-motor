@@ -1,4 +1,4 @@
-# Menggunakan image PHP 8.2 versi CLI (Tanpa Apache bawaan agar tidak konflik)
+# Menggunakan image PHP 8.2 versi CLI
 FROM php:8.2-cli
 
 # Install dependensi sistem dasar yang diwajibkan oleh CodeIgniter 4
@@ -26,9 +26,11 @@ WORKDIR /var/www/html
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Setel hak akses folder writable agar CI4 bisa menulis log dan cache
-RUN chown -R www-data:www-data /var/www/html/writable \
-    && chmod -R 775 /var/www/html/writable
+# --- PERBAIKAN HAK AKSES FOLDER UPLOADS ---
+# Pastikan folder public/uploads ada dan bisa dibaca/tulis oleh server PHP
+RUN mkdir -p /var/www/html/public/uploads \
+    && chown -R www-data:www-data /var/www/html/writable /var/www/html/public/uploads \
+    && chmod -R 775 /var/www/html/writable /var/www/html/public/uploads
 
 # Daftarkan Port 80 untuk lalu lintas jaringan global Railway
 EXPOSE 80
