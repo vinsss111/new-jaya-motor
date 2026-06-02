@@ -26,11 +26,11 @@ class Database extends Config
      */
     public array $default = [
         'DSN'          => '',
-        'hostname'     => 'localhost',
-        'username'     => 'root',
-        'password'     => '',
-        'database'     => '',
-        'DBDriver'     => 'MySQLi',
+        'hostname' => getenv('DATABASE_DEFAULT_HOSTNAME'),
+        'username' => getenv('DATABASE_DEFAULT_USERNAME'),
+        'password' => getenv('DATABASE_DEFAULT_PASSWORD'),
+        'database' => getenv('DATABASE_DEFAULT_DATABASE'),
+        'DBDriver' => getenv('DATABASE_DEFAULT_DBDRIVER') ?: 'Postgre', // Pastikan fallback-nya Postgre
         'DBPrefix'     => '',
         'pConnect'     => false,
         'DBDebug'      => true,
@@ -41,7 +41,7 @@ class Database extends Config
         'compress'     => false,
         'strictOn'     => false,
         'failover'     => [],
-        'port'         => 4000,
+        'port'     => getenv('DATABASE_DEFAULT_DBPORT'),
         'numberNative' => false,
     ];
 
