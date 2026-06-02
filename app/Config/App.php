@@ -16,7 +16,9 @@ class App extends BaseConfig
      *
      * E.g., http://example.com/
      */
-    public string $baseURL = 'https://new-jaya-motor-production.up.railway.app/';
+    // If `APP_BASE_URL` is provided in the environment (e.g. Railway), use it.
+    // Otherwise a sensible fallback will be computed in the constructor.
+    public string $baseURL = '';
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
@@ -181,6 +183,34 @@ class App extends BaseConfig
      * @var array<string, string>
      */
     public array $proxyIPs = [];
+
+    /**
+     * Configure runtime values that cannot be set as constant defaults.
+     * Reads `APP_BASE_URL` environment variable (Railway sets env vars) and
+     * falls back to the previous production URL if nothing is provided.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+
+        // Prefer explicit environment variable
+        $envUrl = getenv('APP_BASE_URL') ?: (getenv('APP_URL') ?: getenv('RAILWAY_STATIC_URL'));
+
+        if (!empty($envUrl)) {
+            $url = rtrim($envUrl, '/');
+            // If scheme missing, try to detect it
+            if (!preg_match('#^https?://#', $url)) {
+                $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
+                $url = $scheme . $url;
+            }
+            $this->baseURL = $url . '/';
+        }
+
+        // If still empty, keep the previous production URL as a safe default
+        if (empty($this->baseURL)) {
+            $this->baseURL = 'https://new-jaya-motor-production.up.railway.app/';
+        }
+    }
 
     /**
      * --------------------------------------------------------------------------
