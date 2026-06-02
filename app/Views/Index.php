@@ -6,9 +6,9 @@
     <title>New Jaya Motor</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="<?= base_url('assets/bootstrap/css/bootstrap.min.css'); ?>">
-    <link rel="icon" type="image/x-icon" href="<?= base_url('assets/image/logo.png'); ?>">
-    <link rel="stylesheet" type="text/css" href="<?= base_url('assets/css/style.css');?> ">
+    <link rel="stylesheet" href="/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="icon" type="image/x-icon" href="/assets/image/logo.png">
+    <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 
 </head>
@@ -130,7 +130,7 @@
             <div class="container py-4">
                 <div class="row align-items-center g-5">
                     <div class="col-lg-6">
-                        <img src="<?= base_url('assets/image/images.jpg'); ?>" class="img-fluid rounded-4 shadow-lg" style="width: 550px;" alt="Workshop">
+                        <img src="/assets/image/images.jpg" class="img-fluid rounded-4 shadow-lg" style="width: 550px;" alt="Workshop">
                     </div>
                     <div class="col-lg-6">
                         <h2 class="fw-bold mb-4">Histori</h2>
@@ -160,17 +160,17 @@
                 <h2 class="fw-bold mb-5">Mekanik Ahli Kami</h2>
                 <div class="row g-4">
                     <div class="col-md-4">
-                        <img src="<?= base_url('assets/image/ava.jpg'); ?>" class="rounded-circle team-img mb-3" alt="Rian">
+                        <img src="/assets/image/ava.jpg" class="rounded-circle team-img mb-3" alt="Rian">
                         <h4 class="fw-bold mb-1">Bang Anam</h4>
                         <p class="text-danger fw-semibold">Senior Mekanik</p>
                     </div>
                     <div class="col-md-4">
-                        <img src="<?= base_url('assets/image/ava.jpg'); ?>" class="rounded-circle team-img mb-3" alt="Eko">
+                        <img src="/assets/image/ava.jpg" class="rounded-circle team-img mb-3" alt="Eko">
                         <h4 class="fw-bold mb-1">Aphen Guo</h4>
                         <p class="text-danger fw-semibold">Senior Mekanik</p>
                     </div>
                     <div class="col-md-4">
-                        <img src="<?= base_url('assets/image/ava.jpg'); ?>" class="rounded-circle team-img mb-3" alt="Dani">
+                        <img src="/assets/image/ava.jpg" class="rounded-circle team-img mb-3" alt="Dani">
                         <h4 class="fw-bold mb-1">Mas Koni</h4>
                         <p class="text-danger fw-semibold">Senior Mekanik</p>
                     </div>
@@ -196,10 +196,10 @@
                         <div class="col-6 col-lg-3">
                             <div class="product-card h-100 d-flex flex-column">
                                 <div class="product-img-container">
-                                    <img src="<?= base_url('uploads/' . $item['gambar']); ?>" 
+                                     <img src="<?= base_url('uploads/' . $item['gambar']); ?>" 
                                          class="card-img-top p-3" 
                                          alt="<?= $item['nama_barang']; ?>" 
-                                         onerror="this.src='<?= base_url('assets/image/logo.png'); ?>'">
+                                         onerror="this.src='/assets/image/logo.png'">
                                 </div>
                                 <div class="p-3 text-center flex-grow-1 d-flex flex-column justify-content-between">
                                     <div>
@@ -449,7 +449,7 @@
             }
 
             // Menembak ke rute internal Vercel yang sudah didaftarkan di Routes.php
-            const response = await fetch('<?= base_url("api/chatbot"); ?>', {
+            const response = await fetch('/api/chatbot', {
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -480,7 +480,7 @@
     inputPesan.onkeypress = (e) => { if(e.key === 'Enter') kirimKeBot(); };
 </script>
 
-    <script src="<?= base_url('assets/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
+    <script src="/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
 <script>
