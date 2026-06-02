@@ -21,36 +21,52 @@ class Database extends Config
 
     /**
      * The default database connection.
-     *
-     * @var array<string, mixed>
-     */
-    public array $default = [
-        'DSN'          => '',
-        'hostname'     => 'localhost',
-        'username'     => 'root',
-        'password'     => '',
-        'database'     => '',
-        'DBDriver'     => 'MySQLi',
-        'DBPrefix'     => '',
-        'pConnect'     => false,
-        'DBDebug'      => true,
-        'charset'      => 'utf8mb4',
-        'DBCollat'     => 'utf8mb4_general_ci',
-        'swapPre'      => '',
-        'encrypt'      => false,
-        'compress'     => false,
-        'strictOn'     => false,
-        'failover'     => [],
-        'port'         => 3306,
-        'numberNative' => false,
-    ];
+        // Detect TiDB Cloud by env hints or hostname patterns
+        $isTiDBEnv = false;
+        if (getenv('TIDB_CLOUD') || getenv('TIDB_HOST') || getenv('TIDB_PORT')) {
+            $isTiDBEnv = true;
+        }
 
-    public function __construct()
-    {
-        parent::__construct();
+        if ($databaseUrl) {
+            $parts = parse_url($databaseUrl);
+            if ($parts !== false) {
+                if (!empty($parts['host'])) {
+                    $this->default['hostname'] = $parts['host'];
+                }
+                if (!empty($parts['user'])) {
+                    $this->default['username'] = $parts['user'];
+                }
+                if (array_key_exists('pass', $parts)) {
+                    $this->default['password'] = $parts['pass'];
+                }
+                if (!empty($parts['path'])) {
+                    $db = ltrim($parts['path'], '/');
+                    if ($db !== '') {
+                        $this->default['database'] = $db;
+                    }
+                }
 
-        // Bersihkan spasi gaib dan isi kredensial secara dinamis dari Vercel
-        if (getenv('DATABASE_DEFAULT_HOSTNAME')) {
+                // If host suggests TiDB (e.g., contains 'tidb'), mark as TiDB
+                if (!empty($parts['host']) && stripos($parts['host'], 'tidb') !== false) {
+                    $isTiDBEnv = true;
+                }
+
+                // If TiDB detected, enforce port 4000. Otherwise prefer port in URL if present.
+                if ($isTiDBEnv) {
+                    $this->default['port'] = 4000;
+                } elseif (!empty($parts['port'])) {
+                    $this->default['port'] = (int) $parts['port'];
+                }
+            }
+        } else {
+            $envPort = getenv('DATABASE_DEFAULT_DBPORT');
+            if ($envPort !== false && $envPort !== '') {
+                $this->default['port'] = (int) trim($envPort);
+            } else {
+                // If user indicates TiDB via env, enforce 4000, else use MySQL default 3306
+                $this->default['port'] = $isTiDBEnv ? 4000 : 3306;
+            }
+        }
             $this->default['hostname'] = trim(getenv('DATABASE_DEFAULT_HOSTNAME'));
         }
         if (getenv('DATABASE_DEFAULT_USERNAME')) {
@@ -96,7 +112,7 @@ class Database extends Config
             if ($envPort !== false && $envPort !== '') {
                 $this->default['port'] = (int) trim($envPort);
             } else {
-                $this->default['port'] = 3306;
+                $this->default['port'] = 4000; // Default port for TiDB Cloud, override if needed
             }
         }
     }
