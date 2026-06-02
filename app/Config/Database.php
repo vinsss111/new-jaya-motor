@@ -65,6 +65,11 @@ class Database extends Config
         if ($envPort = getenv('DATABASE_DEFAULT_PORT')) {
             $this->default['port']     = (int)trim($envPort);
         }
+
+        // AMAN UNTUK TiDB: Lewati pengecekan sertifikat SSL lokal di container Docker
+        $this->default['encrypt'] = [
+            'ssl_verify_server_cert' => false
+        ];
     }
 
     //    /**
