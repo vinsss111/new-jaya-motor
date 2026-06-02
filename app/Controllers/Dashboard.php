@@ -20,7 +20,7 @@ class Dashboard extends BaseController
         if (!$this->session->get('id_user')) {
             $this->session->setFlashdata('error', 'Silakan login terlebih dahulu!');
             // Gunakan exit/redirect di CI4 constructor dengan aman via script or middleware (disarankan pakai Filters nanti)
-            header('Location: ' . base_url('login'));
+            header('Location: ' . base_url('Login'));
             exit;
         }
 
@@ -52,7 +52,7 @@ class Dashboard extends BaseController
     public function index()
     {
         // Mengambil query param (?p=xxx) di CI4
-        $page = $this->request->getGet('p') ?? 'dashboard';
+        $page = $this->request->getGet('p') ?? 'Dashboard';
         
         $data['page']         = $page;
         $data['spareparts']   = $this->sparepartModel->get_all_spareparts();
@@ -72,7 +72,7 @@ class Dashboard extends BaseController
             $data['page_title'] = "Dashboard Overview";
         }
 
-        return view('admin/dashboard', $data);
+        return view('admin/Dashboard', $data);
     }
 
     public function tambah()
@@ -91,7 +91,7 @@ class Dashboard extends BaseController
 
             } else {
                 $this->session->setFlashdata('error', 'Format gambar salah atau ukuran melebihi 2MB.');
-                return redirect()->to('dashboard');
+                return redirect()->to('Dashboard');
             }
         }
 
@@ -120,7 +120,7 @@ class Dashboard extends BaseController
         }
         
         $this->session->setFlashdata('sukses', 'Data barang berhasil ditambahkan!');
-        return redirect()->to('dashboard');
+        return redirect()->to('Dashboard');
     }
 
     public function edit()
@@ -147,7 +147,7 @@ class Dashboard extends BaseController
                 }
             } else {
                 $this->session->setFlashdata('error', 'Format gambar salah atau ukuran melebihi 2MB.');
-                return redirect()->to('dashboard');
+                return redirect()->to('Dashboard');
             }
         }
 
@@ -174,7 +174,7 @@ class Dashboard extends BaseController
         }
         
         $this->session->setFlashdata('sukses', 'Data barang berhasil diperbarui!');
-        return redirect()->to('dashboard');
+        return redirect()->to('Dashboard');
     }
 
     public function hapus($id)
@@ -187,20 +187,20 @@ class Dashboard extends BaseController
 
         $this->sparepartModel->delete_sparepart($id);
         $this->session->setFlashdata('sukses', 'Data barang beserta gambar berhasil dihapus!');
-        return redirect()->to('dashboard');
+        return redirect()->to('Dashboard');
     }
 
     public function approve_pesanan($id)
     {
         $this->sparepartModel->approve_pesanan($id);
         $this->session->setFlashdata('sukses', 'Pesanan berhasil disetujui! Barang telah dicatat di Barang Keluar dan stok berkurang.');
-        return redirect()->to('dashboard?p=pesanan');
+        return redirect()->to('Dashboard?p=pesanan');
     }
 
     public function batalkan_pesanan($id)
     {
         $this->sparepartModel->batalkan_pesanan($id);
         $this->session->setFlashdata('sukses', 'Pesanan berhasil dibatalkan!');
-        return redirect()->to('dashboard?p=pesanan');
+        return redirect()->to('Dashboard?p=pesanan');
     }
 }

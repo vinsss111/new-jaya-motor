@@ -20,7 +20,7 @@ class Login extends BaseController
     {
         // Pengecekan session di CI4
         if ($this->session->get('id_user')) {
-            return redirect()->to('dashboard');
+            return redirect()->to('Dashboard');
         }
         return view('admin/Login');
     }
@@ -43,7 +43,7 @@ class Login extends BaseController
                 $this->session->set($session_data);
                 
                 $this->session->setFlashdata('sukses', 'Selamat datang, ' . $this->session->get('nama_lengkap'));
-                return redirect()->to('dashboard');
+                return redirect()->to('Dashboard');
             } else {
                 $this->session->setFlashdata('error', 'Password yang Anda masukkan salah!');
                 return redirect()->to('Login');

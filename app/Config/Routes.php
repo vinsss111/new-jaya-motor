@@ -14,23 +14,23 @@ $routes->setTranslateURIDashes(false);
 $routes->set404Override();
 // Halaman Utama Katalog & Fitur Pemesanan Publik
 $routes->get('/', 'Index::index');
-$routes->post('index/checkout', 'Index::checkout');
+$routes->post('Index/checkout', 'Index::checkout');
 
 // Halaman Autentikasi Admin (Gunakan huruf kecil untuk URI demi standar web)
-$routes->get('login', 'Login::index');
-$routes->post('login/proses', 'Login::proses');
-$routes->get('login/logout', 'Login::logout');
-$routes->get('login/reset_password', 'Login::reset_password');
-$routes->post('login/proses_reset', 'Login::proses_reset');
-$routes->post('login/cek_password_lama', 'Login::cek_password_lama');
+$routes->get('Login', 'Login::index');
+$routes->post('Login/proses', 'Login::proses');
+$routes->get('Login/logout', 'Login::logout');
+$routes->get('Login/reset_password', 'Login::reset_password');
+$routes->post('Login/proses_reset', 'Login::proses_reset');
+$routes->post('Login/cek_password_lama', 'Login::cek_password_lama');
 
 // Halaman Manajemen Panel (Dashboard Admin)
-$routes->get('dashboard', 'Dashboard::index');
-$routes->post('dashboard/tambah', 'Dashboard::tambah');
-$routes->post('dashboard/edit', 'Dashboard::edit');
-$routes->get('dashboard/hapus/(:num)', 'Dashboard::hapus/$1');
-$routes->get('dashboard/approve_pesanan/(:num)', 'Dashboard::approve_pesanan/$1');
-$routes->get('dashboard/batalkan_pesanan/(:num)', 'Dashboard::batalkan_pesanan/$1');
+$routes->get('Dashboard', 'Dashboard::index');
+$routes->post('Dashboard/tambah', 'Dashboard::tambah');
+$routes->post('Dashboard/edit', 'Dashboard::edit');
+$routes->get('Dashboard/hapus/(:num)', 'Dashboard::hapus/$1');
+$routes->get('Dashboard/approve_pesanan/(:num)', 'Dashboard::approve_pesanan/$1');
+$routes->get('Dashboard/batalkan_pesanan/(:num)', 'Dashboard::batalkan_pesanan/$1');
 
 // Fitur Integrasi Chatbot AI
 $routes->post('api/chatbot', 'Chatbot::index');
